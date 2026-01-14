@@ -27,8 +27,19 @@ use App\Http\Controllers\Backend\PublicMachineDashboardController;
 
 Route::get('/homePage', [FrontendController::class, 'index'])->name('public.homePage');
 Route::get('/product', [FrontendController::class, 'product'])->name('public.product');
-Route::get('/productDetails', [FrontendController::class, 'productDetails'])->name('public.productDetails');
+Route::get('/productDetails/{id}', [FrontendController::class, 'productDetails'])->name('public.productDetails');
 Route::get('/cart', [FrontendController::class, 'cart'])->name('public.cart');
+
+// Cart API (session-based)
+Route::post('/cart/add', [App\Http\Controllers\Frontend\CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [App\Http\Controllers\Frontend\CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [App\Http\Controllers\Frontend\CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [App\Http\Controllers\Frontend\CartController::class, 'clear'])->name('cart.clear');
+Route::get('/cart/count', [App\Http\Controllers\Frontend\CartController::class, 'count'])->name('cart.count');
+Route::get('/cart', [App\Http\Controllers\Frontend\CartController::class, 'index'])->name('cart.index');
+Route::get('/wishlist', [FrontendController::class, 'wishlist'])->name('public.wishlist');
+
+
 
 
 
@@ -97,47 +108,48 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
 
 
-// Category Routes
-Route::group(['prefix' => 'category'], function () {
-    Route::get('/', [CategoryController::class, 'index'])->name('admin.category.index');
-    Route::get('/create', [CategoryController::class, 'create'])->name('admin.category.create');
-    Route::post('/store', [CategoryController::class, 'store'])->name('admin.category.store');
-    Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit');
-    Route::post('/update/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
-    Route::get('/delete/{id}', [CategoryController::class, 'delete'])->name('admin.category.delete');
-    Route::get('/status/{id}', [CategoryController::class, 'toggleStatus'])->name('admin.category.status');
-    Route::post('/get-list', [CategoryController::class, 'getList'])->name('admin.category.getList');
-});
+    // Category Routes
+    Route::group(['prefix' => 'category'], function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('admin.category.index');
+        Route::get('/create', [CategoryController::class, 'create'])->name('admin.category.create');
+        Route::post('/store', [CategoryController::class, 'store'])->name('admin.category.store');
+        Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit');
+        Route::post('/update/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
+        Route::get('/delete/{id}', [CategoryController::class, 'delete'])->name('admin.category.delete');
+        Route::get('/status/{id}', [CategoryController::class, 'toggleStatus'])->name('admin.category.status');
+        Route::post('/get-list', [CategoryController::class, 'getList'])->name('admin.category.getList');
+    });
 
-Route::group(['prefix' => 'admin/subcategory'], function () {
-    Route::get('/', [SubCategoryController::class, 'index'])->name('admin.subcategory.index');
-    Route::get('/create', [SubCategoryController::class, 'create'])->name('admin.subcategory.create');
-    Route::post('/store', [SubCategoryController::class, 'store'])->name('admin.subcategory.store');
-    Route::get('/edit/{id}', [SubCategoryController::class, 'edit'])->name('admin.subcategory.edit');
-    Route::post('/update/{id}', [SubCategoryController::class, 'update'])->name('admin.subcategory.update');
-    Route::get('/delete/{id}', [SubCategoryController::class, 'delete'])->name('admin.subcategory.delete');
-    Route::get('/status/{id}', [SubCategoryController::class, 'toggleStatus'])->name('admin.subcategory.status');
-    Route::post('/get-list', [SubCategoryController::class, 'getList'])->name('admin.subcategory.getList');
-    Route::get('/get-by-category/{categoryId}', [SubCategoryController::class, 'getByCategory'])->name('admin.subcategory.getByCategory');
-});
+    Route::group(['prefix' => 'admin/subcategory'], function () {
+        Route::get('/', [SubCategoryController::class, 'index'])->name('admin.subcategory.index');
+        Route::get('/create', [SubCategoryController::class, 'create'])->name('admin.subcategory.create');
+        Route::post('/store', [SubCategoryController::class, 'store'])->name('admin.subcategory.store');
+        Route::get('/edit/{id}', [SubCategoryController::class, 'edit'])->name('admin.subcategory.edit');
+        Route::post('/update/{id}', [SubCategoryController::class, 'update'])->name('admin.subcategory.update');
+        Route::get('/delete/{id}', [SubCategoryController::class, 'delete'])->name('admin.subcategory.delete');
+        Route::get('/status/{id}', [SubCategoryController::class, 'toggleStatus'])->name('admin.subcategory.status');
+        Route::post('/get-list', [SubCategoryController::class, 'getList'])->name('admin.subcategory.getList');
+        Route::get('/get-by-category/{categoryId}', [SubCategoryController::class, 'getByCategory'])->name('admin.subcategory.getByCategory');
+    });
 
-// Product Routes
-Route::group(['prefix' => 'admin/product'], function () {
-    Route::get('/', [ProductController::class, 'index'])->name('admin.product.index');
-    Route::get('/create', [ProductController::class, 'create'])->name('admin.product.create');
-    Route::post('/store', [ProductController::class, 'store'])->name('admin.product.store');
-    Route::get('/view/{id}', [ProductController::class, 'view'])->name('admin.product.view');
-    Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('admin.product.edit');
-    Route::post('/update/{id}', [ProductController::class, 'update'])->name('admin.product.update');
-    Route::get('/delete/{id}', [ProductController::class, 'delete'])->name('admin.product.delete');
-    Route::get('/status/{id}', [ProductController::class, 'toggleStatus'])->name('admin.product.status');
-    Route::post('/get-list', [ProductController::class, 'getList'])->name('admin.product.getList');
-    Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories'])->name('admin.product.getSubcategories');
-});
+    // Product Routes
+    Route::group(['prefix' => 'admin/product'], function () {
+        Route::get('/', [ProductController::class, 'index'])->name('admin.product.index');
+        Route::get('/create', [ProductController::class, 'create'])->name('admin.product.create');
+        Route::post('/store', [ProductController::class, 'store'])->name('admin.product.store');
+        Route::get('/view/{id}', [ProductController::class, 'view'])->name('admin.product.view');
+        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('admin.product.edit');
+        Route::post('/update/{id}', [ProductController::class, 'update'])->name('admin.product.update');
+        Route::get('/delete/{id}', [ProductController::class, 'delete'])->name('admin.product.delete');
+        Route::get('/status/{id}', [ProductController::class, 'toggleStatus'])->name('admin.product.status');
+        Route::post('/get-list', [ProductController::class, 'getList'])->name('admin.product.getList');
+        Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories'])->name('admin.product.getSubcategories');
 
-Route::post('/update-image-order', [ProductController::class, 'updateImageOrder'])->name('updateImageOrder');
-Route::delete('/delete-image/{id}', [ProductController::class, 'deleteImage'])->name('deleteImage');
-Route::post('/set-primary-image/{id}', [ProductController::class, 'setPrimaryImage'])->name('setPrimaryImage');
+        // Image management routes for products (AJAX)
+        Route::post('/update-image-order', [ProductController::class, 'updateImageOrder'])->name('admin.product.update-image-order');
+        Route::delete('/delete-image/{id}', [ProductController::class, 'deleteImage'])->name('admin.product.delete-image');
+        Route::post('/set-primary-image/{id}', [ProductController::class, 'setPrimaryImage'])->name('admin.product.set-primary-image');
+    });
 
     // ..................................  WashTusuka Routes ....................................
 

@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory;
 
     protected $table = 'products';
-    
+
     protected $fillable = [
         'CategoryId',
         'SubCategoryId',
@@ -84,18 +84,16 @@ class Product extends Model
     public function scopeSearch($query, $searchTerm)
     {
         return $query->where('ProductName', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('ProductDetails', 'like', '%' . $searchTerm . '%');
+            ->orWhere('ProductDetails', 'like', '%' . $searchTerm . '%');
     }
 
-    // Relationship with ProductImages
-public function images()
-{
-    return $this->hasMany(ProductImage::class, 'product_id')->orderBy('sort_order');
-}
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
 
-// Relationship with primary image
-public function primaryImage()
-{
-    return $this->hasOne(ProductImage::class, 'product_id')->where('is_primary', true);
-}
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
 }

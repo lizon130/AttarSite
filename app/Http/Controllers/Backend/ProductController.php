@@ -66,10 +66,10 @@ class ProductController extends Controller
                     return $product->subCategory->SubCategoryName ?? 'N/A';
                 })
                 ->editColumn('Price', function ($product) {
-                    return '₹' . number_format($product->Price, 2);
+                    return '' . number_format($product->Price, 2);
                 })
                 ->editColumn('OfferPrice', function ($product) {
-                    return $product->OfferPrice ? '₹' . number_format($product->OfferPrice, 2) : '-';
+                    return $product->OfferPrice ? '' . number_format($product->OfferPrice, 2) : '-';
                 })
                 ->addColumn('discount', function ($product) {
                     if ($product->OfferPrice && $product->Price > 0) {
@@ -109,7 +109,7 @@ class ProductController extends Controller
                     $actions .= '</div>';
                     return $actions;
                 })
-                ->rawColumns(['discount', 'status', 'action'])
+                ->rawColumns(['discount', 'status', 'action', 'thumbnail'])
                 ->make(true);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -169,18 +169,18 @@ class ProductController extends Controller
             ]);
 
             // 2️⃣ Then save images
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('products', 'public');
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('products', 'public');
 
-                ProductImage::create([
-                    'product_id' => $product->id, // ✅ now exists
-                    'image_path' => $path,
-                    'is_primary' => $index === 0,
-                    'sort_order' => $index
-                ]);
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,
+                        'is_primary' => $index === 0,
+                        'sort_order' => $index
+                    ]);
+                }
             }
-        }
 
             DB::commit();
 

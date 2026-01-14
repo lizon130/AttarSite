@@ -266,86 +266,6 @@
     @push('footer')
     <script>
         $(document).ready(function() {
-            // Form validation
-            $('#productForm').validate({
-                rules: {
-                    CategoryId: {
-                        required: true
-                    },
-                    SubCategoryId: {
-                        required: true
-                    },
-                    ProductName: {
-                        required: true,
-                        minlength: 2,
-                        maxlength: 255
-                    },
-                    Price: {
-                        required: true,
-                        number: true,
-                        min: 0
-                    },
-                    OfferPrice: {
-                        number: true,
-                        min: 0,
-                        lessThan: '#Price'
-                    },
-                    ProductSize: {
-                        maxlength: 100
-                    },
-                    status: {
-                        required: true
-                    }
-                },
-                messages: {
-                    CategoryId: {
-                        required: "Please select category"
-                    },
-                    SubCategoryId: {
-                        required: "Please select sub category"
-                    },
-                    ProductName: {
-                        required: "Please enter product name",
-                        minlength: "Product name must be at least 2 characters",
-                        maxlength: "Product name cannot exceed 255 characters"
-                    },
-                    Price: {
-                        required: "Please enter price",
-                        number: "Please enter a valid number",
-                        min: "Price cannot be negative"
-                    },
-                    OfferPrice: {
-                        number: "Please enter a valid number",
-                        min: "Offer price cannot be negative",
-                        lessThan: "Offer price must be less than regular price"
-                    },
-                    ProductSize: {
-                        maxlength: "Size cannot exceed 100 characters"
-                    },
-                    status: {
-                        required: "Please select status"
-                    }
-                },
-                errorElement: 'span',
-                errorPlacement: function (error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.mb-3').append(error);
-                },
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
-
-            // Custom validation method for offer price
-            $.validator.addMethod("lessThan", function(value, element, param) {
-                if (value === "") return true; // Allow empty
-                var price = $(param).val();
-                return parseFloat(value) < parseFloat(price);
-            }, "Offer price must be less than regular price");
-
             // Dynamic subcategory loading
             $('#CategoryId').change(function() {
                 var categoryId = $(this).val();
@@ -353,7 +273,7 @@
                 
                 if (categoryId) {
                     $.ajax({
-                        url: '{{ url("admin/product/get-subcategories") }}/' + categoryId,
+                        url: '{{ url("admin/admin/product/get-subcategories") }}/' + categoryId,
                         type: 'GET',
                         dataType: 'json',
                         beforeSend: function() {
@@ -391,6 +311,129 @@
 
             // Trigger change on page load
             $('#CategoryId').trigger('change');
+
+            // Image preview for newly selected files (client-side only)
+            $('#images').change(function() {
+                var preview = $('#imagePreview');
+
+                if (this.files) {
+                    $.each(this.files, function(i, file) {
+                        var reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            var html = '<div class="col-md-2 image-item new-item">' +
+                                       '<div class="card">' +
+                                       '<img src="' + e.target.result + '" ' +
+                                       'class="card-img-top" ' +
+                                       'style="height: 100px; object-fit: cover;">' +
+                                       '<div class="card-body p-2 text-center">' +
+                                       '<span class="badge bg-secondary">New</span>' +
+                                       ' <button type="button" class="btn btn-sm btn-outline-danger remove-new-image"><i class="fas fa-trash"></i></button>' +
+                                       '</div></div></div>';
+
+                            preview.append(html);
+                        }
+
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+
+            // Remove preview-only new image
+            $(document).on('click', '.remove-new-image', function() {
+                $(this).closest('.image-item').remove();
+            });
+
+            // Delete existing image
+            $(document).on('click', '.delete-image', function() {
+                var imageId = $(this).data('id');
+                var imageItem = $(this).closest('.image-item');
+
+                if (confirm('Are you sure you want to delete this image?')) {
+                    $.ajax({
+                        url: '{{ url("admin/admin/product/delete-image") }}/' + imageId,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                imageItem.remove();
+                                toastr.success(response.message);
+                            } else {
+                                toastr.error(response.message || 'Error deleting image');
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Error deleting image');
+                        }
+                    });
+                }
+            });
+
+            // Set image as primary
+            $(document).on('click', '.set-primary', function() {
+                var imageId = $(this).data('id');
+                var button = $(this);
+
+                $.ajax({
+                    url: '{{ url("admin/admin/product/set-primary-image") }}/' + imageId,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Convert any existing primary badge back to a Set Primary button
+                            $('#imagePreview .image-item').each(function() {
+                                var id = $(this).data('id');
+                                if ($(this).find('.badge.bg-success').length) {
+                                    $(this).find('.badge.bg-success').replaceWith('<button type="button" class="btn btn-sm btn-outline-primary mb-1 set-primary" data-id="' + id + '">Set Primary</button>');
+                                }
+                            });
+
+                            // Show primary badge for selected image
+                            button.replaceWith('<span class="badge bg-success mb-1">Primary</span>');
+                            toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message || 'Error setting primary');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Error setting primary');
+                    }
+                });
+            });
+
+            // Make images sortable and persist order
+            if ($('#imagePreview .image-item').length > 0) {
+                $('#imagePreview').sortable({
+                    update: function(event, ui) {
+                        var order = [];
+                        $('#imagePreview .image-item').each(function(index) {
+                            var id = $(this).data('id');
+                            if (id) order.push(id);
+                        });
+
+                        $.ajax({
+                            url: '{{ route("admin.product.update-image-order") }}',
+                            type: 'POST',
+                            data: { order: order },
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) toastr.success(response.message || 'Image order updated');
+                            },
+                            error: function() {
+                                toastr.error('Error updating image order');
+                            }
+                        });
+                    }
+                });
+
+                $('#imagePreview').disableSelection();
+            }
         });
     </script>
     @endpush

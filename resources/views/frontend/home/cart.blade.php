@@ -180,83 +180,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Item 1 -->
-                                        <tr>
+                                            @forelse($items ?? [] as $item)
+                                        <tr data-id="{{ $item['id'] }}">
                                             <td class="ps-4 py-4">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="https://picsum.photos/seed/oudhroyal/100/100" alt="Oudh"
+                                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}"
                                                         class="cart-item-img me-3">
                                                     <div>
-                                                        <h6 class="mb-1 fw-bold">Royal Cambodi Oudh</h6>
-                                                        <small class="text-muted">Size: 12ml</small>
+                                                        <h6 class="mb-1 fw-bold">{{ $item['name'] }}</h6>
+                                                        <small class="text-muted">SKU: PROD{{ str_pad($item['id'], 5, '0', STR_PAD_LEFT) }}</small>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="py-4">$45.00</td>
+                                            <td class="py-4">${{ number_format($item['price'], 2) }}</td>
                                             <td class="py-4">
-                                                <input type="number" class="qty-input" value="1" min="1">
+                                                <input type="number" class="qty-input item-qty" value="{{ $item['quantity'] }}" min="1" data-id="{{ $item['id'] }}">
                                             </td>
-                                            <td class="py-4 fw-bold text-success">$45.00</td>
+                                            <td class="py-4 fw-bold text-success item-total">${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
                                             <td class="py-4 text-end pe-4">
-                                                <button class="remove-btn" title="Remove Item"><i
-                                                        class="fas fa-trash-alt"></i></button>
+                                                <button class="remove-btn remove-item" data-id="{{ $item['id'] }}" title="Remove Item"><i class="fas fa-trash-alt"></i></button>
                                             </td>
                                         </tr>
-
-                                        <!-- Item 2 -->
+                                        @empty
                                         <tr>
-                                            <td class="ps-4 py-4">
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://picsum.photos/seed/blackstone/100/100" alt="Tasbih"
-                                                        class="cart-item-img me-3">
-                                                    <div>
-                                                        <h6 class="mb-1 fw-bold">Premium Black Agate Tasbih</h6>
-                                                        <small class="text-muted">99 Beads • Silver Tassel</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="py-4">$35.00</td>
-                                            <td class="py-4">
-                                                <input type="number" class="qty-input" value="1" min="1">
-                                            </td>
-                                            <td class="py-4 fw-bold text-success">$35.00</td>
-                                            <td class="py-4 text-end pe-4">
-                                                <button class="remove-btn" title="Remove Item"><i
-                                                        class="fas fa-trash-alt"></i></button>
-                                            </td>
+                                            <td colspan="5" class="text-center py-4">Your cart is empty.</td>
                                         </tr>
-
-                                        <!-- Item 3 -->
-                                        <tr>
-                                            <td class="ps-4 py-4">
-                                                <div class="d-flex align-items-center">
-                                                    <img src="https://picsum.photos/seed/roseattar/100/100" alt="Rose"
-                                                        class="cart-item-img me-3">
-                                                    <div>
-                                                        <h6 class="mb-1 fw-bold">Taif Rose Attar</h6>
-                                                        <small class="text-muted">Size: 6ml</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="py-4">$20.00</td>
-                                            <td class="py-4">
-                                                <input type="number" class="qty-input" value="2" min="1">
-                                            </td>
-                                            <td class="py-4 fw-bold text-success">$40.00</td>
-                                            <td class="py-4 text-end pe-4">
-                                                <button class="remove-btn" title="Remove Item"><i
-                                                        class="fas fa-trash-alt"></i></button>
-                                            </td>
-                                        </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="card-footer bg-white border-0 p-3 d-flex flex-wrap gap-2 justify-content-between">
-                            <a href="index.html" class="btn btn-outline-secondary btn-sm"><i
-                                    class="fas fa-arrow-left me-2"></i>Continue Shopping</a>
-                            <button class="btn btn-outline-dark btn-sm"><i class="fas fa-sync-alt me-2"></i>Update
-                                Cart</button>
+                            <a href="{{ route('public.product') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-2"></i>Continue Shopping</a>
+                            <button id="clearCart" class="btn btn-outline-dark btn-sm"><i class="fas fa-trash me-2"></i>Clear Cart</button>
                         </div>
                     </div>
 
@@ -279,8 +235,8 @@
                         <h4 class="font-arabic mb-4 border-bottom pb-3">Order Summary</h4>
 
                         <div class="summary-row">
-                            <span>Subtotal (3 items)</span>
-                            <span>$120.00</span>
+                            <span>Subtotal ({{ array_sum(array_column($items ?? [], 'quantity')) }} items)</span>
+                            <span>${{ number_format($subtotal ?? 0, 2) }}</span>
                         </div>
                         <div class="summary-row">
                             <span>Shipping</span>
@@ -288,12 +244,12 @@
                         </div>
                         <div class="summary-row">
                             <span>Tax (Estimated)</span>
-                            <span>$12.00</span>
+                            <span>${{ number_format(($subtotal ?? 0) * 0.10, 2) }}</span>
                         </div>
 
                         <div class="total-row">
                             <span>Total</span>
-                            <span>$132.00</span>
+                            <span>${{ number_format(($subtotal ?? 0) + (($subtotal ?? 0) * 0.10), 2) }}</span>
                         </div>
 
                         <div class="mt-4 mb-3">
@@ -356,4 +312,70 @@
             </div>
         </div>
     </section>
+
+@push('scripts')
+<script>
+    // Update cart count badge across the site
+    function updateCartCount() {
+        $.get('{{ route("cart.count") }}', function(res) {
+            $('.badge-cart').text(res.count || 0);
+        }).fail(function() {
+            // silently fail
+        });
+    }
+
+    // Remove an item from the cart (row removal + reload)
+    $(document).on('click', '.remove-item', function(e) {
+        e.preventDefault();
+        if (!confirm('Remove this item?')) return;
+        var id = $(this).data('id');
+        var row = $(this).closest('tr');
+        $.ajax({
+            url: '{{ url("/cart/remove") }}/' + id,
+            method: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function(res) {
+                if (res.success) {
+                    toastr.success(res.message || 'Item removed');
+                    updateCartCount();
+                    // Remove row and refresh totals (reload for simplicity)
+                    location.reload();
+                }
+            },
+            error: function() { toastr.error('Could not remove item'); }
+        });
+    });
+
+    // Change quantity
+    $(document).on('change', '.item-qty', function() {
+        var id = $(this).data('id');
+        var qty = parseInt($(this).val()) || 1;
+        if (qty < 1) { qty = 1; $(this).val(qty); }
+        $.post('{{ route("cart.update") }}', { _token: '{{ csrf_token() }}', product_id: id, quantity: qty }, function(res) {
+            if (res.success) {
+                toastr.success(res.message || 'Cart updated');
+                updateCartCount();
+                location.reload();
+            }
+        }).fail(function() { toastr.error('Failed to update cart'); });
+    });
+
+    // Clear cart
+    $('#clearCart').on('click', function(e) {
+        e.preventDefault();
+        if (!confirm('Clear the cart?')) return;
+        $.post('{{ route("cart.clear") }}', { _token: '{{ csrf_token() }}' }, function(res) {
+            if (res.success) {
+                toastr.success(res.message || 'Cart cleared');
+                updateCartCount();
+                location.reload();
+            }
+        }).fail(function() { toastr.error('Failed to clear cart'); });
+    });
+
+    // Initialize badge
+    $(function(){ updateCartCount(); });
+</script>
+@endpush
+
 @endsection
