@@ -108,6 +108,12 @@ class FrontendController extends Controller
     }
     public function cart()
     {
-        return view('frontend.home.cart');
+        $cart = session()->get('cart', []);
+        $items = array_values($cart);
+        $subtotal = array_reduce($items, function ($carry, $item) {
+            return $carry + ($item['price'] * $item['quantity']);
+        }, 0);
+
+        return view('frontend.home.cart', compact('items', 'subtotal'));
     }
 }

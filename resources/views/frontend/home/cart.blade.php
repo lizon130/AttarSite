@@ -267,7 +267,8 @@
                             </div>
                         </div>
 
-                        <button class="btn-checkout mb-3">Proceed to Checkout</button>
+                        
+                        <a href="{{ route('checkout') }}" class="btn-checkout mb-3">Proceed to Checkout</a>
 
                         <div class="text-center mt-3">
                             <p class="small text-muted mb-2">Secure Checkout Guarantee</p>

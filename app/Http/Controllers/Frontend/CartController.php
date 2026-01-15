@@ -17,8 +17,11 @@ class CartController extends Controller
         $subtotal = array_reduce($items, function ($carry, $item) {
             return $carry + ($item['price'] * $item['quantity']);
         }, 0);
+        
+        $tax = $subtotal * 0.10; // 10% tax
+        $total = $subtotal + $tax;
 
-        return view('frontend.home.cart', compact('items', 'subtotal'));
+        return view('frontend.home.cart', compact('items', 'subtotal', 'tax', 'total'));
     }
 
     // Add product to cart (AJAX)
@@ -40,9 +43,12 @@ class CartController extends Controller
             $cart[$product->id] = [
                 'id' => $product->id,
                 'name' => $product->ProductName,
-                'price' => (float) $product->getFinalPriceAttribute(),
+                'price' => $product->OfferPrice ? $product->OfferPrice : $product->Price,
+                'original_price' => $product->Price,
+                'offer_price' => $product->OfferPrice,
                 'image' => $product->primaryImage->image_url ?? asset('images/default-product.png'),
-                'quantity' => $qty
+                'quantity' => $qty,
+                'category' => $product->category->categoryName ?? 'Uncategorized'
             ];
         }
 
@@ -73,7 +79,11 @@ class CartController extends Controller
         $cart[$productId]['quantity'] = (int) $request->quantity;
         session()->put('cart', $cart);
 
-        return response()->json(['success' => true, 'message' => 'Cart updated']);
+        return response()->json([
+            'success' => true, 
+            'message' => 'Cart updated',
+            'cart_count' => array_sum(array_column($cart, 'quantity'))
+        ]);
     }
 
     // Remove item
@@ -85,7 +95,11 @@ class CartController extends Controller
             unset($cart[$productId]);
             session()->put('cart', $cart);
 
-            return response()->json(['success' => true, 'message' => 'Item removed', 'cart_count' => array_sum(array_column($cart, 'quantity'))]);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Item removed', 
+                'cart_count' => array_sum(array_column($cart, 'quantity'))
+            ]);
         }
 
         return response()->json(['success' => false, 'message' => 'Item not found'], 404);
@@ -95,7 +109,11 @@ class CartController extends Controller
     public function clear()
     {
         session()->forget('cart');
-        return response()->json(['success' => true, 'message' => 'Cart cleared']);
+        return response()->json([
+            'success' => true, 
+            'message' => 'Cart cleared',
+            'cart_count' => 0
+        ]);
     }
 
     // Get cart count

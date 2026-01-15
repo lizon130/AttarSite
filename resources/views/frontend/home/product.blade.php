@@ -244,9 +244,9 @@
                                     @endif
                                     
                                     <div class="product-actions">
-                                        <button class="action-btn add-to-cart" data-id="{{ $product->id }}">
-                                            <i class="fas fa-shopping-cart"></i>
-                                        </button>
+                                        <button class="action-btn add-to-cart" onclick="cartFunctions.addToCart({{ $product->id }})">
+    <i class="fas fa-shopping-cart"></i>
+</button>
                                         <a href="{{ route('public.productDetails', $product->id) }}" class="action-btn">
                                             <i class="far fa-eye"></i>
                                         </a>
@@ -361,25 +361,11 @@
         window.location.href = url.toString();
     }
 
-    // Add to cart
-    $(document).on('click', '.add-to-cart', function() {
+    // Add to cart using global cart.js
+    $(document).on('click', '.add-to-cart', function(e) {
+        e.preventDefault();
         const productId = $(this).data('id');
-        $.ajax({
-            url: '{{ route("cart.add") }}',
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                quantity: 1
-            },
-            success: function(response) {
-                toastr.success(response.message || 'Product added to cart!');
-                updateCartCount();
-            },
-            error: function() {
-                toastr.error('Please login to add to cart');
-            }
-        });
+        cartFunctions.addToCart(productId, 1);
     });
 
     // Add to wishlist
@@ -389,7 +375,7 @@
             url: '#',
             method: 'POST',
             data: {
-                _token: '{{ csrf_token() }}',
+                _token: cartFunctions.getCsrfToken(),
                 product_id: productId
             },
             success: function(response) {

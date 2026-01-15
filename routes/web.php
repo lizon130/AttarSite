@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\UnitController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\EventController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\CategoryController;
@@ -28,18 +30,23 @@ use App\Http\Controllers\Backend\PublicMachineDashboardController;
 Route::get('/homePage', [FrontendController::class, 'index'])->name('public.homePage');
 Route::get('/product', [FrontendController::class, 'product'])->name('public.product');
 Route::get('/productDetails/{id}', [FrontendController::class, 'productDetails'])->name('public.productDetails');
-Route::get('/cart', [FrontendController::class, 'cart'])->name('public.cart');
-
-// Cart API (session-based)
-Route::post('/cart/add', [App\Http\Controllers\Frontend\CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/update', [App\Http\Controllers\Frontend\CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{id}', [App\Http\Controllers\Frontend\CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/clear', [App\Http\Controllers\Frontend\CartController::class, 'clear'])->name('cart.clear');
-Route::get('/cart/count', [App\Http\Controllers\Frontend\CartController::class, 'count'])->name('cart.count');
-Route::get('/cart', [App\Http\Controllers\Frontend\CartController::class, 'index'])->name('cart.index');
-Route::get('/wishlist', [FrontendController::class, 'wishlist'])->name('public.wishlist');
 
 
+Route::get('/cart', [CartController::class, 'index'])->name('cart'); // Change from FrontendController to CartController
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+
+
+
+Route::prefix('checkout')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/order/{order}', [CheckoutController::class, 'show'])->name('checkout.show');
+});
 
 
 

@@ -87,7 +87,9 @@
                     @php
                         // Try to find an active product to link to; otherwise link to filtered product listing
                         $firstProduct = $category->products()->where('status', 'active')->first();
-                        $cardUrl = $firstProduct ? route('public.productDetails', $firstProduct->id) : route('public.product', ['category' => $category->id]);
+                        $cardUrl = $firstProduct
+                            ? route('public.productDetails', $firstProduct->id)
+                            : route('public.product', ['category' => $category->id]);
                     @endphp
                     <div class="col-md-6 col-lg-4">
                         <div class="cat-card">
@@ -95,175 +97,173 @@
                                 <img src="https://picsum.photos/seed/perfume/600/800" alt="{{ $category->categoryName }}">
                             </a>
                             <div class="cat-overlay">
-                                <h3><a href="{{ $cardUrl }}" class="text-white text-decoration-none">{{ $category->categoryName }}</a></h3>
+                                <h3><a href="{{ $cardUrl }}"
+                                        class="text-white text-decoration-none">{{ $category->categoryName }}</a></h3>
                                 <p class="mb-0">{{ $category->products()->count() ?? '0' }} Products</p>
                             </div>
                         </div>
                     </div>
-                @endforeach    
+                @endforeach
             </div>
         </div>
     </section>
 
     <!-- Products Grid -->
     <section class="section-padding bg-white" id="shop">
-    <div class="container">
-        <div class="section-title">
-            <span class="text-uppercase text-muted letter-spacing-2">New Arrivals</span>
-            <h2>Trending Products</h2>
-            <div class="divider"></div>
-        </div>
+        <div class="container">
+            <div class="section-title">
+                <span class="text-uppercase text-muted letter-spacing-2">New Arrivals</span>
+                <h2>Trending Products</h2>
+                <div class="divider"></div>
+            </div>
 
-        <!-- Dynamic Filters -->
-        <ul class="nav justify-content-center mb-5">
-            <li class="nav-item">
-                <a class="nav-link active text-dark fw-bold" href="#" data-category="all">All</a>
-            </li>
-            @foreach($categories as $category)
+            <!-- Dynamic Filters -->
+            <ul class="nav justify-content-center mb-5">
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="#" 
-                       data-category="{{ $category->id }}">
-                        {{ $category->categoryName }}
-                    </a>
+                    <a class="nav-link active text-dark fw-bold" href="#" data-category="all">All</a>
                 </li>
-            @endforeach
-        </ul>
+                @foreach ($categories as $category)
+                    <li class="nav-item">
+                        <a class="nav-link text-muted" href="#" data-category="{{ $category->id }}">
+                            {{ $category->categoryName }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
 
-        <div class="row" id="product-container">
-            @forelse($products as $product)
-                <div class="col-md-6 col-lg-3 mb-4" data-category="{{ $product->CategoryId }}">
-                    <div class="product-card">
-                        <!-- Badge for new or discount -->
-                        @if($product->created_at->gt(now()->subDays(30)))
-                            <div class="badge-new">New</div>
-                        @elseif($product->OfferPrice && $product->Price > 0)
-                            @php
-                                $discount = round((($product->Price - $product->OfferPrice) / $product->Price) * 100);
-                            @endphp
-                            <div class="badge-new">-{{ $discount }}%</div>
-                        @endif
-                        
-                        <div class="product-img-wrapper">
-                            <!-- Dynamic Image -->
-                            @if($product->primaryImage)
-                                <img src="{{ $product->primaryImage->image_url }}" 
-                                     alt="{{ $product->ProductName }}"
-                                     style="height: 250px; object-fit: cover;">
-                            @else
-                                <img src="{{ asset('images/default-product.png') }}" 
-                                     alt="{{ $product->ProductName }}"
-                                     style="height: 250px; object-fit: cover;">
+            <div class="row" id="product-container">
+                @forelse($products as $product)
+                    <div class="col-md-6 col-lg-3 mb-4" data-category="{{ $product->CategoryId }}">
+                        <div class="product-card">
+                            <!-- Badge for new or discount -->
+                            @if ($product->created_at->gt(now()->subDays(30)))
+                                <div class="badge-new">New</div>
+                            @elseif($product->OfferPrice && $product->Price > 0)
+                                @php
+                                    $discount = round(
+                                        (($product->Price - $product->OfferPrice) / $product->Price) * 100,
+                                    );
+                                @endphp
+                                <div class="badge-new">-{{ $discount }}%</div>
                             @endif
-                            
-                            <div class="product-actions">
-                                <button class="action-btn add-to-cart" data-id="{{ $product->id }}">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                                <a href="{{ route('public.productDetails', $product->id) }}" class="action-btn">
-                                    <i class="far fa-eye"></i>
-                                </a>
-                                <button class="action-btn add-to-wishlist" data-id="{{ $product->id }}">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="p-3 text-center">
-                            <!-- Category -->
-                            <small class="text-muted">
-                                {{ $product->category->categoryName ?? 'Uncategorized' }}
-                            </small>
-                            
-                            <!-- Product Name -->
-                            <h5 class="fw-bold mt-1">{{ $product->ProductName }}</h5>
-                            
-                            <!-- Rating (you can make this dynamic too if you have ratings) -->
-                            <div class="text-warning mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            
-                            <!-- Price -->
-                            <div>
-                                @if($product->OfferPrice && $product->OfferPrice < $product->Price)
-                                    <span class="fs-5 fw-bold text-decoration-line-through text-muted me-2">
-                                        ${{ number_format($product->Price, 2) }}
-                                    </span>
-                                    <span class="fs-5 fw-bold" style="color: var(--primary);">
-                                        ${{ number_format($product->OfferPrice, 2) }}
-                                    </span>
+
+                            <div class="product-img-wrapper">
+                                <!-- Dynamic Image -->
+                                @if ($product->primaryImage)
+                                    <img src="{{ $product->primaryImage->image_url }}" alt="{{ $product->ProductName }}"
+                                        style="height: 250px; object-fit: cover;">
                                 @else
-                                    <span class="fs-5 fw-bold" style="color: var(--primary);">
-                                        ${{ number_format($product->Price, 2) }}
-                                    </span>
+                                    <img src="{{ asset('images/default-product.png') }}"
+                                        alt="{{ $product->ProductName }}" style="height: 250px; object-fit: cover;">
                                 @endif
+
+                                <div class="product-actions">
+                                    <button class="action-btn add-to-cart" onclick="cartFunctions.addToCart({{ $product->id }})">
+    <i class="fas fa-shopping-cart"></i>
+</button>
+                                    <a href="{{ route('public.productDetails', $product->id) }}" class="action-btn">
+                                        <i class="far fa-eye"></i>
+                                    </a>
+                                    <button class="action-btn add-to-wishlist" data-id="{{ $product->id }}">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="p-3 text-center">
+                                <!-- Category -->
+                                <small class="text-muted">
+                                    {{ $product->category->categoryName ?? 'Uncategorized' }}
+                                </small>
+
+                                <!-- Product Name -->
+                                <h5 class="fw-bold mt-1">{{ $product->ProductName }}</h5>
+
+                                <!-- Rating (you can make this dynamic too if you have ratings) -->
+                                <div class="text-warning mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+
+                                <!-- Price -->
+                                <div>
+                                    @if ($product->OfferPrice && $product->OfferPrice < $product->Price)
+                                        <span class="fs-5 fw-bold text-decoration-line-through text-muted me-2">
+                                            ${{ number_format($product->Price, 2) }}
+                                        </span>
+                                        <span class="fs-5 fw-bold" style="color: var(--primary);">
+                                            ${{ number_format($product->OfferPrice, 2) }}
+                                        </span>
+                                    @else
+                                        <span class="fs-5 fw-bold" style="color: var(--primary);">
+                                            ${{ number_format($product->Price, 2) }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="col-12 text-center">
-                    <p class="text-muted">No products available yet.</p>
-                </div>
-            @endforelse
-        </div>
+                @empty
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No products available yet.</p>
+                    </div>
+                @endforelse
+            </div>
 
-        <div class="text-center mt-5">
-            <a href="#" class="btn btn-outline-dark rounded-pill px-4">
-                View All Products
-            </a>
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-outline-dark rounded-pill px-4">
+                    View All Products
+                </a>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-@push('scripts')
-<script>
-    // Filter products by category
-    $(document).ready(function() {
-        $('.nav-link[data-category]').click(function(e) {
-            e.preventDefault();
-            
-            // Update active state
-            $('.nav-link').removeClass('active text-dark fw-bold').addClass('text-muted');
-            $(this).addClass('active text-dark fw-bold').removeClass('text-muted');
-            
-            const categoryId = $(this).data('category');
-            const products = $('[data-category]');
-            
-            if (categoryId === 'all') {
-                products.show();
-            } else {
-                products.each(function() {
-                    if ($(this).data('category') == categoryId) {
-                        $(this).show();
+    @push('scripts')
+        <script>
+            // Filter products by category
+            $(document).ready(function() {
+                $('.nav-link[data-category]').click(function(e) {
+                    e.preventDefault();
+
+                    // Update active state
+                    $('.nav-link').removeClass('active text-dark fw-bold').addClass('text-muted');
+                    $(this).addClass('active text-dark fw-bold').removeClass('text-muted');
+
+                    const categoryId = $(this).data('category');
+                    const products = $('[data-category]');
+
+                    if (categoryId === 'all') {
+                        products.show();
                     } else {
-                        $(this).hide();
+                        products.each(function() {
+                            if ($(this).data('category') == categoryId) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
                     }
                 });
-            }
-        });
-        
-        // Add to cart functionality
-        $('.add-to-cart').click(function() {
-            const productId = $(this).data('id');
-            $.post('{{ route("cart.add") }}', { _token: '{{ csrf_token() }}', product_id: productId, quantity: 1 }, function(res) {
-                toastr.success(res.message || 'Product added to cart');
-                updateCartCount();
-            }).fail(function() { toastr.error('Could not add to cart'); });
-        });
-        
-        // Add to wishlist functionality
-        $('.add-to-wishlist').click(function() {
-            const productId = $(this).data('id');
-            // Implement your wishlist logic here
-            console.log('Add to wishlist:', productId);
-        });
-    });
-</script>
-@endpush
+
+                // Add to cart functionality using global cart.js
+                $('.add-to-cart').click(function(e) {
+                    e.preventDefault();
+                    const productId = $(this).data('id');
+                    cartFunctions.addToCart(productId, 1);
+                });
+
+                // Add to wishlist functionality
+                $('.add-to-wishlist').click(function() {
+                    const productId = $(this).data('id');
+                    // Implement your wishlist logic here
+                    console.log('Add to wishlist:', productId);
+                });
+            });
+        </script>
+    @endpush
 
     <!-- Promo Section -->
     <section class="section-padding" style="background: var(--primary); color: #fff;">

@@ -152,11 +152,11 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <button class="btn-cart" onclick="addToCart({{ $product->id }})" 
-                                        {{ $product->stock <= 0 ? 'disabled' : '' }}>
-                                    <i class="fas fa-shopping-bag me-2"></i> 
-                                    {{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
-                                </button>
+                                <button class="btn-cart" onclick="cartFunctions.addToCart({{ $product->id }}, document.getElementById('qtyValue').value)" 
+        {{ $product->stock <= 0 ? 'disabled' : '' }}>
+    <i class="fas fa-shopping-bag me-2"></i> 
+    {{ $product->stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
+</button>
                             </div>
                         </div>
 
@@ -438,27 +438,10 @@
         qtyInput.value = currentQty;
     }
 
-    // Add to cart
+    // Add to cart using global cart.js
     function addToCart(productId) {
         const quantity = document.getElementById('qtyValue').value;
-        
-        // AJAX call to add to cart
-        $.ajax({
-            url: '{{ route("cart.add") }}',
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                quantity: quantity
-            },
-            success: function(response) {
-                toastr.success(response.message || 'Product added to cart!');
-                updateCartCount();
-            },
-            error: function() {
-                toastr.error('Failed to add product to cart');
-            }
-        });
+        cartFunctions.addToCart(productId, parseInt(quantity));
     }
 
     // Add to wishlist
@@ -467,7 +450,7 @@
             url: '#',
             method: 'POST',
             data: {
-                _token: '{{ csrf_token() }}',
+                _token: cartFunctions.getCsrfToken(),
                 product_id: productId
             },
             success: function(response) {
@@ -513,6 +496,13 @@
                     toastr.error('Please login to submit a review');
                 }
             });
+        });
+
+        // Add to cart for related products
+        $(document).on('click', '.add-to-cart', function(e) {
+            e.preventDefault();
+            const productId = $(this).data('id');
+            cartFunctions.addToCart(productId, 1);
         });
     });
 </script>

@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;700&display=swap"
@@ -389,15 +391,9 @@
                 <div class="d-flex align-items-center gap-3">
                     <a href="#"><i class="fas fa-search fa-lg"></i></a>
                     <a href="#"><i class="far fa-heart fa-lg"></i></a>
-                    <a href="#" class="position-relative">
+                    <a href="{{ route('cart') }}" class="position-relative">
                         <i class="fas fa-shopping-bag fa-lg"></i>
-                        @auth
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-cart">2</span>
-                        @else
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-cart">0</span>
-                        @endauth
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-cart">0</span>
                     </a>
                 </div>
             </div>
@@ -469,14 +465,17 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        function updateCartCount() {
-            fetch("{{ route('cart.count') }}").then(function(r){ return r.json(); }).then(function(res){
-                document.querySelectorAll('.badge-cart').forEach(function(el){ el.textContent = res.count || 0; });
-            }).catch(function(){});
-        }
-        document.addEventListener('DOMContentLoaded', function(){ updateCartCount(); });
-    </script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr for notifications -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- CSRF Token Meta Tag -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Global Cart Functions -->
+    <script src="{{ asset('js/cart.js') }}"></script>
 
     @stack('scripts')
 </body>
