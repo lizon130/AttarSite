@@ -206,6 +206,13 @@
                                     href="{{ route('admin.product.index') }}">
                                     <i class="fa-solid fa-angles-right ikon"></i> Products
                                 </a>
+
+                            {{-- Orders --}}
+                          
+                                <a class="nav-link {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.edit') ? 'active' : '' }}"
+                                    href="{{ route('admin.product.index') }}">
+                                    <i class="fa-solid fa-angles-right ikon"></i> Products
+                                </a>    
                             
                         </nav>
                     </div>

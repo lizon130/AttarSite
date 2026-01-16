@@ -19,6 +19,7 @@ use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Frontend\FrontendController;
 use App\Http\Controllers\Backend\SubCategoryController;
 use App\Http\Controllers\Backend\AlumniSectionController;
+use App\Http\Controllers\Backend\CustomerOrderController;
 use App\Http\Controllers\Backend\FrontendSectionController;
 use App\Http\Controllers\Backend\MachineTransferController;
 use App\Http\Controllers\Backend\PublicDashboardController;
@@ -169,8 +170,15 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
         Route::any('/update/{id}', [UnitController::class, 'update'])->name('admin.unit.update');
         Route::get('/delete/{id}', [UnitController::class, 'delete'])->name('admin.unit.delete');
     });
+    
 
     Route::get('/admin/unit/get/workorders/list', [UnitController::class, 'getWorkOrdersList'])->name('unit.workorders.list');
+
+
+     Route::group(['prefix' => '/OrdersCustomer'], function () {
+        Route::get('/', [CustomerOrderController::class, 'index'])->name('customer.order.user');
+        Route::get('/get/list', [CustomerOrderController::class, 'getList']);
+    });
 
     //machine transfer
     Route::group(['prefix' => '/machine-tranfer'], function () {

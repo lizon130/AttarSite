@@ -122,7 +122,12 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::active()->get();
-        $subcategories = SubCategory::where('categoryId', $categories->first()->id)->active()->get();
+        // $subcategories = SubCategory::where('categoryId', $categories->first()->id)->active()->get();
+        $subcategories = SubCategory::active()->get();
+
+
+        // dd($subcategories);
+
         return view('backend.pages.product.create', compact('categories', 'subcategories'));
     }
 
