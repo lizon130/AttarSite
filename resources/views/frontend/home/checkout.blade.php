@@ -38,6 +38,18 @@
         box-shadow: 0 0 0 0.2rem rgba(15, 61, 40, 0.1);
     }
 
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+
     .order-summary {
         background: #f9f9f9;
         border-radius: 8px;
@@ -95,6 +107,11 @@
         background: var(--secondary);
         color: var(--primary);
     }
+
+    .btn-checkout:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 </style>
 
 @section('content')
@@ -103,6 +120,18 @@
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Please fix the following errors:</strong>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -118,18 +147,21 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Full Name *</label>
-                                    <input type="text" class="form-control" name="customer_name"
-                                        value="{{ auth()->user()->name ?? old('customer_name') }}" required>
+                                    <input type="text" class="form-control @error('customer_name') is-invalid @enderror" 
+                                           name="customer_name"
+                                           value="{{ old('customer_name', auth()->user()->name ?? '') }}">
                                     @error('customer_name')
-                                        <div class="text-danger small">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Email Address *</label>
-                                    <input type="email" class="form-control" name="customer_email">
+                                    <input type="email" class="form-control @error('customer_email') is-invalid @enderror" 
+                                           name="customer_email"
+                                           value="{{ old('customer_email', auth()->user()->email ?? '') }}">
                                     @error('customer_email')
-                                        <div class="text-danger small">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -137,43 +169,70 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Phone Number *</label>
-                                    <input type="tel" class="form-control" name="customer_phone"
-                                        value="{{ old('customer_phone') }}" required>
+                                    <input type="tel" class="form-control @error('customer_phone') is-invalid @enderror" 
+                                           name="customer_phone"
+                                           value="{{ old('customer_phone') }}">
                                     @error('customer_phone')
-                                        <div class="text-danger small">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Country *</label>
+                                    <select class="form-control @error('country') is-invalid @enderror" name="country">
+                                        <option value="">Select Country</option>
+                                        <option value="Bangladesh" {{ old('country') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
+                                        <option value="USA" {{ old('country') == 'USA' ? 'selected' : '' }}>United States</option>
+                                        <option value="UK" {{ old('country') == 'UK' ? 'selected' : '' }}>United Kingdom</option>
+                                        <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada</option>
+                                        <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia</option>
+                                        <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India</option>
+                                        <option value="UAE" {{ old('country') == 'UAE' ? 'selected' : '' }}>United Arab Emirates</option>
+                                    </select>
+                                    @error('country')
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Full Address *</label>
-                                <textarea class="form-control" name="customer_address" rows="3" required>{{ old('customer_address') }}</textarea>
+                                <textarea class="form-control @error('customer_address') is-invalid @enderror" 
+                                          name="customer_address" 
+                                          rows="3">{{ old('customer_address') }}</textarea>
                                 @error('customer_address')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">City *</label>
-                                    <input type="text" class="form-control" name="city" value="{{ old('city') }}"
-                                        required>
+                                    <input type="text" class="form-control @error('city') is-invalid @enderror" 
+                                           name="city" 
+                                           value="{{ old('city') }}">
                                     @error('city')
-                                        <div class="text-danger small">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">State / Province</label>
-                                    <input type="text" class="form-control" name="state" value="{{ old('state') }}">
+                                    <input type="text" class="form-control @error('state') is-invalid @enderror" 
+                                           name="state" 
+                                           value="{{ old('state') }}">
+                                    @error('state')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">ZIP / Postal Code *</label>
-                                    <input type="text" class="form-control" name="zip_code"
-                                        value="{{ old('zip_code') }}" required>
+                                    <input type="text" class="form-control @error('zip_code') is-invalid @enderror" 
+                                           name="zip_code"
+                                           value="{{ old('zip_code') }}">
                                     @error('zip_code')
-                                        <div class="text-danger small">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -247,7 +306,7 @@
                             </div>
 
                             <div class="mt-4">
-                                <button type="submit" class="btn-checkout">
+                                <button type="submit" class="btn-checkout" id="submitBtn">
                                     <i class="fas fa-lock me-2"></i> Place Order
                                 </button>
                             </div>
@@ -266,60 +325,24 @@
 @endsection
 
 @push('scripts')
-    <script>
-        // Select payment method
-        function selectPayment(method) {
-            $('.payment-method').removeClass('active');
-            $('#' + method).closest('.payment-method').addClass('active');
-            $('input[name="payment_method"][value="' + method + '"]').prop('checked', true);
-            togglePaymentFields();
-        }
+<script>
+    // Simple payment method selection
+    function selectPayment(method) {
+        $('.payment-method').removeClass('active');
+        $('#' + method).closest('.payment-method').addClass('active');
+        $('input[name="payment_method"][value="' + method + '"]').prop('checked', true);
+    }
 
-        // Toggle payment fields based on selection
-        function togglePaymentFields() {
-            var method = $('input[name="payment_method"]:checked').val();
+    // Payment method click handlers
+    $('.payment-method').click(function() {
+        var method = $(this).find('input').val();
+        selectPayment(method);
+    });
 
-            if (method === 'online') {
-                // You can show additional payment fields here
-                console.log('Online payment selected');
-            } else {
-                console.log('COD selected');
-            }
-        }
-
-        // Form validation
-        $('#checkoutForm').validate({
-            rules: {
-                customer_name: 'required',
-                customer_email: {
-                    required: false,
-                    email: true
-                },
-                customer_phone: 'required',
-                customer_address: 'required',
-                city: 'required',
-                zip_code: 'required',
-            },
-            messages: {
-                customer_name: 'Please enter your full name',
-                customer_email: {
-                    required: 'Please enter your email address',
-                    email: 'Please enter a valid email address'
-                },
-                customer_phone: 'Please enter your phone number',
-                customer_address: 'Please enter your address',
-                city: 'Please enter your city',
-                zip_code: 'Please enter your zip code',
-
-            },
-            errorElement: 'div',
-            errorClass: 'text-danger small mt-1',
-            highlight: function(element) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element) {
-                $(element).removeClass('is-invalid');
-            }
-        });
-    </script>
+    // Prevent double form submission
+    $('#checkoutForm').on('submit', function() {
+        $('#submitBtn').prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin me-2"></i> Processing...');
+    });
+</script>
 @endpush

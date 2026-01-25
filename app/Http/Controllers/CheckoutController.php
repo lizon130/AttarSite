@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -33,18 +34,31 @@ class CheckoutController extends Controller
     // Process checkout
     public function store(Request $request)
     {
-        // Validate form
+        // Log the incoming request data
+        Log::info('Checkout form submitted with data:', $request->all());
+        
+        // Validate form - ONLY LARAVEL VALIDATION
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
-            'customer_address' => 'required|string',
+            'customer_address' => 'required|string|max:500',
             'city' => 'required|string|max:100',
             'state' => 'nullable|string|max:100',
             'zip_code' => 'required|string|max:20',
             'country' => 'required|string|max:100',
-            'special_instructions' => 'nullable|string',
+            'special_instructions' => 'nullable|string|max:1000',
             'payment_method' => 'required|in:cod,online',
+        ], [
+            'customer_name.required' => 'Please enter your full name.',
+            'customer_email.required' => 'Please enter your email address.',
+            'customer_email.email' => 'Please enter a valid email address.',
+            'customer_phone.required' => 'Please enter your phone number.',
+            'customer_address.required' => 'Please enter your address.',
+            'city.required' => 'Please enter your city.',
+            'zip_code.required' => 'Please enter your ZIP/postal code.',
+            'country.required' => 'Please select your country.',
+            'payment_method.required' => 'Please select a payment method.',
         ]);
         
         // Get cart
@@ -63,22 +77,28 @@ class CheckoutController extends Controller
         $shipping = 0;
         $total = $subtotal + $tax + $shipping;
         
+        Log::info('Cart items:', $items);
+        Log::info('Calculated amounts - Subtotal: ' . $subtotal . ', Tax: ' . $tax . ', Total: ' . $total);
+        
         try {
             DB::beginTransaction();
             
+            // Generate order number
+            $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(uniqid());
+            
             // Create order
             $order = Order::create([
-                'order_number' => Order::generateOrderNumber(),
-                'user_id' => auth()->id(),
+                'order_number' => $orderNumber,
+                'user_id' => auth()->id() ?? null,
                 'customer_name' => $validated['customer_name'],
                 'customer_email' => $validated['customer_email'],
                 'customer_phone' => $validated['customer_phone'],
                 'customer_address' => $validated['customer_address'],
                 'city' => $validated['city'],
-                'state' => $validated['state'],
+                'state' => $validated['state'] ?? null,
                 'zip_code' => $validated['zip_code'],
                 'country' => $validated['country'],
-                'special_instructions' => $validated['special_instructions'],
+                'special_instructions' => $validated['special_instructions'] ?? null,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'shipping' => $shipping,
@@ -87,6 +107,8 @@ class CheckoutController extends Controller
                 'payment_status' => $validated['payment_method'] == 'cod' ? 'pending' : 'pending',
                 'order_status' => 'pending',
             ]);
+            
+            Log::info('Order created successfully:', $order->toArray());
             
             // Create order items
             foreach ($items as $item) {
@@ -99,6 +121,12 @@ class CheckoutController extends Controller
                     'total' => $item['price'] * $item['quantity'],
                     'image' => $item['image'],
                 ]);
+                
+                Log::info('Order item created:', [
+                    'product_id' => $item['id'],
+                    'product_name' => $item['name'],
+                    'quantity' => $item['quantity'],
+                ]);
             }
             
             // Clear cart
@@ -106,12 +134,20 @@ class CheckoutController extends Controller
             
             DB::commit();
             
+            Log::info('Order ' . $orderNumber . ' placed successfully.');
+            
             return redirect()->route('checkout.success', $order->order_number)
                 ->with('success', 'Order placed successfully!');
                 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to place order. Please try again.');
+            
+            Log::error('Failed to place order: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return back()
+                ->with('error', 'Failed to place order: ' . $e->getMessage())
+                ->withInput();
         }
     }
 

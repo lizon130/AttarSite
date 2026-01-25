@@ -33,13 +33,12 @@ Route::get('/product', [FrontendController::class, 'product'])->name('public.pro
 Route::get('/productDetails/{id}', [FrontendController::class, 'productDetails'])->name('public.productDetails');
 
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart'); // Change from FrontendController to CartController
+Route::get('/cart', [CartController::class, 'index'])->name('cart'); 
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
-
 
 
 Route::prefix('checkout')->group(function () {
@@ -48,7 +47,6 @@ Route::prefix('checkout')->group(function () {
     Route::get('/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/order/{order}', [CheckoutController::class, 'show'])->name('checkout.show');
 });
-
 
 
 Route::get('/tasbih', function () {
@@ -115,7 +113,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     });
 
 
-
     // Category Routes
     Route::group(['prefix' => 'category'], function () {
         Route::get('/', [CategoryController::class, 'index'])->name('admin.category.index');
@@ -175,7 +172,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::get('/admin/unit/get/workorders/list', [UnitController::class, 'getWorkOrdersList'])->name('unit.workorders.list');
 
 
-     Route::group(['prefix' => '/OrdersCustomer'], function () {
+    Route::group(['prefix' => '/OrdersCustomer'], function () {
         Route::get('/', [CustomerOrderController::class, 'index'])->name('customer.order.user');
         Route::get('/get/list', [CustomerOrderController::class, 'getList']);
     });

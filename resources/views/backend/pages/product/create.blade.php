@@ -109,7 +109,8 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                                 <small class="text-muted">You can select multiple images. First image will be set as
-                                    primary.</small>
+                                    primary.
+                                </small>
 
                                 <!-- Image preview container -->
                                 <div id="imagePreview" class="mt-3 row g-2">
