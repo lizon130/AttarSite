@@ -28,14 +28,22 @@
                 @endif
 
                 {{-- Setting --}}
-                {{-- @if (Helper::hasRight('setting.view'))
+                @if (Helper::hasRight('setting.view'))
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#settingNav"
-                        aria-expanded="@if (Route::is('admin.setting.general') || Route::is('admin.setting.static.content') || Route::is('admin.setting.legal.content') || Route::is('admin.contact') || Route::is('admin.setting.journey.unity.content') || Route::is('admin.resource')) true @else false @endif"
+                        aria-expanded="@if (Route::is('admin.setting.general') ||
+                                Route::is('admin.setting.static.content') ||
+                                Route::is('admin.setting.legal.content') ||
+                                Route::is('admin.setting.journey.unity.content') ||
+                                Route::is('admin.resource')) true @else false @endif"
                         aria-controls="collapseLayouts">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div> Setup
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse @if (Route::is('admin.setting.general') || Route::is('admin.setting.static.content') || Route::is('admin.setting.legal.content') || Route::is('admin.contact') || Route::is('admin.setting.journey.unity.content') || Route::is('admin.resource')) show @endif" id="settingNav"
+                    <div class="collapse @if (Route::is('admin.setting.general') ||
+                            Route::is('admin.setting.static.content') ||
+                            Route::is('admin.setting.legal.content') ||
+                            Route::is('admin.setting.journey.unity.content') ||
+                            Route::is('admin.resource')) show @endif" id="settingNav"
                         aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav down">
                             @if (Helper::hasRight('setting.general'))
@@ -54,31 +62,18 @@
                                     href="{{ route('admin.setting.journey.unity.content') }}"><i
                                         class="fa-solid fa-angles-right ikon"></i> Frontend Content</a>
                             @endif
-                            @if (Helper::hasRight('setting.alumni-content'))
-                                <a class="nav-link {{ Route::is('admin.setting.alumni-content') ? 'active' : '' }}"
-                                    href="{{ route('admin.setting.alumni-content') }}"><i
-                                        class="fa-solid fa-angles-right ikon"></i> Alumni Page Content</a>
-                            @endif
                             @if (Helper::hasRight('setting.legal-content'))
                                 <!--<a class="nav-link {{ Route::is('admin.setting.legal.content') ? 'active' : '' }}"
                                     href="{{ route('admin.setting.legal.content') }}"><i
                                         class="fa-solid fa-angles-right ikon"></i> Legal Content</a>-->
                             @endif
 
-                            @if (Helper::hasRight('contact.view'))
-                                <a class="nav-link {{ Route::is('admin.contact') ? 'active' : '' }}"
-                                    href="{{ route('admin.contact') }}"><i class="fa-solid fa-angles-right ikon"></i>
-                                    Contact Management
-                                </a>
-                            @endif
 
-                            
                         </nav>
                     </div>
-                @endif --}}
+                @endif
 
-
-                {{-- Addministrator  --}}
+                {{-- admin  --}}
                 @if (Helper::hasRight('setting.view'))
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#setupNav"
                         aria-expanded="@if (Route::is('admin.role') ||
@@ -89,7 +84,7 @@
                                 Route::is('admin.partner.product') ||
                                 Route::is('admin.user')) true @else false @endif"
                         aria-controls="collapseLayouts">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-school"></i></div> Administration
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-user-tie"></i></div> Administration
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
                     <div class="collapse @if (Route::is('admin.role') ||
@@ -106,20 +101,15 @@
                                     href="{{ route('admin.role') }}"><i class="fa-solid fa-angles-right ikon"></i> Role
                                     Management</a>
                             @endif
+                            <a class="nav-link {{ Route::is('admin.role.right') ? 'active' : '' }}"
+                                href="{{ route('admin.role.right') }}"><i class="fa-solid fa-angles-right ikon"></i>
+                                Right Management</a>
+
 
 
                             @if (Helper::hasRight('user.view'))
                                 <a class="nav-link {{ Route::is('admin.user') ? 'active' : '' }}"
                                     href="{{ route('admin.user') }}"><i class="fa-solid fa-angles-right ikon"></i> User
-                                    Management
-                                </a>
-                            @endif
-
-
-                            @if (Helper::hasRight('department.view'))
-                                <a class="nav-link {{ Route::is('admin.department.index') ? 'active' : '' }}"
-                                    href="{{ route('admin.department.index') }}"><i
-                                        class="fa-solid fa-angles-right ikon"></i> Department
                                     Management
                                 </a>
                             @endif
@@ -130,7 +120,7 @@
 
                 {{-- Machine Transfer  --}}
                 @if (Helper::hasRight('activity.view'))
-                
+
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#unitNav"
                         aria-expanded="{{ Route::is('admin.unit.user') || Route::is('admin.machineTrans.*') || Route::is('machine-transfer.*') ? 'true' : 'false' }}"
                         aria-controls="unitNav">
@@ -151,7 +141,7 @@
                                         href="{{ route('admin.unit.user') }}">
                                         <i class="fa-solid fa-angles-right ikon"></i> Unit List
                                     </a>
-                                @endif    
+                                @endif
 
                                 {{-- Machine Transfer --}}
                                 <a class="nav-link {{ Route::is('admin.machineTrans.user') ? 'active' : '' }}"
@@ -166,12 +156,12 @@
                                     href="{{ route('machine-transfer.approvals') }}">
                                     <i class="fa-solid fa-angles-right ikon"></i> Transfer Verification
                                 </a>
-                            @endif    
+                            @endif
                         </nav>
                     </div>
                 @endif
 
-                  {{-- Product Management --}}
+                {{-- Product Management --}}
                 @if (Helper::hasRight('activity.view'))
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#categoryNav"
                         aria-expanded="{{ Route::is('admin.category.*') || Route::is('admin.subcategory.*') || Route::is('admin.product.*') ? 'true' : 'false' }}"
@@ -193,27 +183,96 @@
                             @endif
 
                             {{-- Sub Categories --}}
-                            
-                                <a class="nav-link {{ Route::is('admin.subcategory.index') || Route::is('admin.subcategory.create') || Route::is('admin.subcategory.edit') ? 'active' : '' }}"
-                                    href="{{ route('admin.subcategory.index') }}">
-                                    <i class="fa-solid fa-angles-right ikon"></i> Sub Categories
-                                </a>
-                            
+
+                            <a class="nav-link {{ Route::is('admin.subcategory.index') || Route::is('admin.subcategory.create') || Route::is('admin.subcategory.edit') ? 'active' : '' }}"
+                                href="{{ route('admin.subcategory.index') }}">
+                                <i class="fa-solid fa-angles-right ikon"></i> Sub Categories
+                            </a>
+
 
                             {{-- Products --}}
-                          
-                                <a class="nav-link {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.edit') ? 'active' : '' }}"
-                                    href="{{ route('admin.product.index') }}">
-                                    <i class="fa-solid fa-angles-right ikon"></i> Products
-                                </a>
+
+                            <a class="nav-link {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.edit') ? 'active' : '' }}"
+                                href="{{ route('admin.product.index') }}">
+                                <i class="fa-solid fa-angles-right ikon"></i> Products
+                            </a>
 
                             {{-- Orders --}}
-                          
-                                <a class="nav-link {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.edit') ? 'active' : '' }}"
-                                    href="{{ route('admin.product.index') }}">
-                                    <i class="fa-solid fa-angles-right ikon"></i> Products
-                                </a>    
-                            
+
+                            {{-- <a class="nav-link {{ Route::is('admin.product.index') || Route::is('admin.product.create') || Route::is('admin.product.edit') ? 'active' : '' }}"
+                                    href="{{ route('customer.order.user') }}">
+                                    <i class="fa-solid fa-angles-right ikon"></i> Orders
+                                </a>     --}}
+
+
+
+                        </nav>
+                    </div>
+                @endif
+
+                {{-- Order Management --}}
+                @if (Helper::hasRight('activity.view') || Helper::hasRight('activity.view'))
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                        data-bs-target="#orderNav"
+                        aria-expanded="{{ Route::is('customer.order.*') || Route::is('admin.orders.*') || Route::is('admin.order.*') ? 'true' : 'false' }}"
+                        aria-controls="orderNav">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                        Order Management
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+
+                    <div class="collapse {{ Route::is('customer.order.*') || Route::is('admin.orders.*') || Route::is('admin.order.*') ? 'show' : '' }}"
+                        id="orderNav" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav down">
+                            {{-- All Orders (Admin) --}}
+                            @if (Helper::hasRight('order.view') || Helper::hasRight('activity.view'))
+                                <a class="nav-link {{ Route::is('customer.order.user') || Route::is('customer.order.index') ? 'active' : '' }}"
+                                    href="{{ route('customer.order.user') }}">
+                                    <i class="fa-solid fa-angles-right ikon"></i> All Orders
+                                </a>
+                            @endif
+
+                            {{-- Order Details/View --}}
+                            @if (Helper::hasRight('activity.view'))
+                                <a class="nav-link {{ Route::is('admin.orders.show') ? 'active' : '' }}"
+                                    href="#">
+                                    <i class="fa-solid fa-angles-right ikon"></i> Order Details
+                                </a>
+                            @endif
+
+                            {{-- Invoice Management --}}
+                            @if (Helper::hasRight('activity.view'))
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                    data-bs-target="#invoiceSubNav">
+                                    <i class="fa-solid fa-angles-right ikon"></i> Invoices
+                                    <div class="sb-sidenav-collapse-arrow ms-auto"><i class="fas fa-angle-down"></i>
+                                    </div>
+                                </a>
+                                <div class="collapse" id="invoiceSubNav">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link {{ Route::is('admin.orders.invoice') ? 'active' : '' }}"
+                                            href="#">
+                                            <i class="fa-solid fa-file-invoice"></i> View Invoice
+                                        </a>
+                                        <a class="nav-link {{ Route::is('admin.orders.download-invoice') ? 'active' : '' }}"
+                                            href="#">
+                                            <i class="fa-solid fa-download"></i> Download PDF
+                                        </a>
+                                        <a class="nav-link {{ Route::is('admin.orders.print-invoice') ? 'active' : '' }}"
+                                            href="#">
+                                            <i class="fa-solid fa-print"></i> Print Invoice
+                                        </a>
+                                    </nav>
+                                </div>
+                            @endif
+
+                            {{-- Order Status Update --}}
+                            @if (Helper::hasRight('activity.edit'))
+                                <a class="nav-link {{ Route::is('admin.orders.update-status') ? 'active' : '' }}"
+                                    href="#">
+                                    <i class="fa-solid fa-angles-right ikon"></i> Update Status
+                                </a>
+                            @endif
                         </nav>
                     </div>
                 @endif

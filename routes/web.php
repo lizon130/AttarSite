@@ -33,7 +33,7 @@ Route::get('/product', [FrontendController::class, 'product'])->name('public.pro
 Route::get('/productDetails/{id}', [FrontendController::class, 'productDetails'])->name('public.productDetails');
 
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart'); 
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
@@ -167,14 +167,21 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
         Route::any('/update/{id}', [UnitController::class, 'update'])->name('admin.unit.update');
         Route::get('/delete/{id}', [UnitController::class, 'delete'])->name('admin.unit.delete');
     });
-    
+
 
     Route::get('/admin/unit/get/workorders/list', [UnitController::class, 'getWorkOrdersList'])->name('unit.workorders.list');
 
 
     Route::group(['prefix' => '/OrdersCustomer'], function () {
         Route::get('/', [CustomerOrderController::class, 'index'])->name('customer.order.user');
+        Route::get('/orders/{id}', [CustomerOrderController::class, 'show'])->name('admin.orders.show');
         Route::get('/get/list', [CustomerOrderController::class, 'getList']);
+        Route::patch('/orders/{id}/status', [CustomerOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+        Route::get('/orders/{id}/invoice', [CustomerOrderController::class, 'invoice'])->name('admin.orders.invoice');
+
+        Route::get('/orders/{id}/invoice', [CustomerOrderController::class, 'invoice'])->name('admin.orders.invoice');
+        Route::get('/orders/{id}/invoice/download', [CustomerOrderController::class, 'downloadInvoice'])->name('admin.orders.download-invoice');
+        Route::get('/orders/{id}/invoice/print', [CustomerOrderController::class, 'printInvoice'])->name('admin.orders.print-invoice');
     });
 
     //machine transfer

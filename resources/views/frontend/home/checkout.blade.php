@@ -182,12 +182,7 @@
                                     <select class="form-control @error('country') is-invalid @enderror" name="country">
                                         <option value="">Select Country</option>
                                         <option value="Bangladesh" {{ old('country') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
-                                        <option value="USA" {{ old('country') == 'USA' ? 'selected' : '' }}>United States</option>
-                                        <option value="UK" {{ old('country') == 'UK' ? 'selected' : '' }}>United Kingdom</option>
-                                        <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada</option>
-                                        <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia</option>
-                                        <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India</option>
-                                        <option value="UAE" {{ old('country') == 'UAE' ? 'selected' : '' }}>United Arab Emirates</option>
+                                        <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
                                     </select>
                                     @error('country')
                                         <div class="invalid-feedback">{{ $message }}</div>
